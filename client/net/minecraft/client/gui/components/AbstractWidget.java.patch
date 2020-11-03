@@ -1,0 +1,15 @@
+--- net/minecraft/client/gui/components/AbstractWidget.java
++++ net/minecraft/client/gui/components/AbstractWidget.java
+@@ -205,11 +205,11 @@
+    public void setAlpha(float var1) {
+       this.alpha = var1;
+    }
+ 
+    public void setMessage(Component var1) {
+-      if (!Objects.equals(var1, this.message)) {
++      if (!Objects.equals(var1.getString(), this.message.getString())) {
+          this.queueNarration(250);
+       }
+ 
+       this.message = var1;
+    }

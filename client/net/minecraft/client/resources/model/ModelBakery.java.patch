@@ -1,0 +1,44 @@
+--- net/minecraft/client/resources/model/ModelBakery.java
++++ net/minecraft/client/resources/model/ModelBakery.java
+@@ -328,13 +328,13 @@
+             Pair var12 = Pair.of(var10, () -> {
+                return var11;
+             });
+             boolean var25 = false;
+ 
+-            label97: {
++            label98: {
+                try {
+-                  label112: {
++                  label107: {
+                      List var13;
+                      try {
+                         var25 = true;
+                         var13 = (List)this.resourceManager.getResources(var9).stream().map((var1x) -> {
+                            try {
+@@ -368,11 +368,11 @@
+                            }
+                         }).collect(Collectors.toList());
+                      } catch (IOException var26) {
+                         LOGGER.warn("Exception loading blockstate definition: {}: {}", var9, var26);
+                         var25 = false;
+-                        break label112;
++                        break label107;
+                      }
+ 
+                      Iterator var14 = var13.iterator();
+ 
+                      while(var14.hasNext()) {
+@@ -411,11 +411,11 @@
+                         });
+                         var8.putAll(var17);
+                      }
+ 
+                      var25 = false;
+-                     break label97;
++                     break label98;
+                   }
+                } catch (ModelBakery.BlockStateDefinitionException var27) {
+                   throw var27;
+                } catch (Exception var28) {
+                   throw new ModelBakery.BlockStateDefinitionException(String.format("Exception loading blockstate definition: '%s': %s", var9, var28));

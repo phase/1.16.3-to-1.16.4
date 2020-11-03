@@ -1,0 +1,28 @@
+--- net/minecraft/world/entity/projectile/FireworkRocketEntity.java
++++ net/minecraft/world/entity/projectile/FireworkRocketEntity.java
+@@ -117,21 +117,22 @@
+             this.setPos(this.attachedToEntity.getX(), this.attachedToEntity.getY(), this.attachedToEntity.getZ());
+             this.setDeltaMovement(this.attachedToEntity.getDeltaMovement());
+          }
+       } else {
+          if (!this.isShotAtAngle()) {
+-            this.setDeltaMovement(this.getDeltaMovement().multiply(1.15D, 1.0D, 1.15D).add(0.0D, 0.04D, 0.0D));
++            double var7 = this.horizontalCollision ? 1.0D : 1.15D;
++            this.setDeltaMovement(this.getDeltaMovement().multiply(var7, 1.0D, var7).add(0.0D, 0.04D, 0.0D));
+          }
+ 
+          var1 = this.getDeltaMovement();
+          this.move(MoverType.SELF, var1);
+          this.setDeltaMovement(var1);
+       }
+ 
+-      HitResult var7 = ProjectileUtil.getHitResult(this, this::canHitEntity);
++      HitResult var8 = ProjectileUtil.getHitResult(this, this::canHitEntity);
+       if (!this.noPhysics) {
+-         this.onHit(var7);
++         this.onHit(var8);
+          this.hasImpulse = true;
+       }
+ 
+       this.updateRotation();
+       if (this.life == 0 && !this.isSilent()) {

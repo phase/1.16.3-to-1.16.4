@@ -1,0 +1,43 @@
+--- com/mojang/authlib/Environment.java
++++ com/mojang/authlib/Environment.java
+@@ -7,15 +7,17 @@
+ 
+    String getAccountsHost();
+ 
+    String getSessionHost();
+ 
++   String getServicesHost();
++
+    String getName();
+ 
+    String asString();
+ 
+-   static Environment create(final String var0, final String var1, final String var2, final String var3) {
++   static Environment create(final String var0, final String var1, final String var2, final String var3, final String var4) {
+       return new Environment() {
+          public String getAuthHost() {
+             return var0;
+          }
+ 
+@@ -25,15 +27,19 @@
+ 
+          public String getSessionHost() {
+             return var2;
+          }
+ 
+-         public String getName() {
++         public String getServicesHost() {
+             return var3;
+          }
+ 
++         public String getName() {
++            return var4;
++         }
++
+          public String asString() {
+-            return (new StringJoiner(", ", "", "")).add("authHost='" + this.getAuthHost() + "'").add("accountsHost='" + this.getAccountsHost() + "'").add("sessionHost='" + this.getSessionHost() + "'").add("name='" + this.getName() + "'").toString();
++            return (new StringJoiner(", ", "", "")).add("authHost='" + this.getAuthHost() + "'").add("accountsHost='" + this.getAccountsHost() + "'").add("sessionHost='" + this.getSessionHost() + "'").add("servicesHost='" + this.getServicesHost() + "'").add("name='" + this.getName() + "'").toString();
+          }
+       };
+    }
+ }

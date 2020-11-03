@@ -1,0 +1,28 @@
+--- com/mojang/realmsclient/gui/screens/RealmsSelectWorldTemplateScreen.java
++++ com/mojang/realmsclient/gui/screens/RealmsSelectWorldTemplateScreen.java
+@@ -92,11 +92,11 @@
+       this.displayWarning = true;
+    }
+ 
+    public boolean mouseClicked(double var1, double var3, int var5) {
+       if (this.hoverWarning && this.warningURL != null) {
+-         Util.getPlatform().openUri("https://beta.minecraft.net/realms/adventure-maps-in-1-9");
++         Util.getPlatform().openUri("https://www.minecraft.net/realms/adventure-maps-in-1-9");
+          return true;
+       } else {
+          return super.mouseClicked(var1, var3, var5);
+       }
+    }
+@@ -231,11 +231,11 @@
+                   }
+ 
+                   if (var2.templates.isEmpty()) {
+                      if (RealmsSelectWorldTemplateScreen.this.worldTemplateObjectSelectionList.isEmpty()) {
+                         String var5 = I18n.get("mco.template.select.none", "%link");
+-                        TextRenderingUtils.LineSegment var6 = TextRenderingUtils.LineSegment.link(I18n.get("mco.template.select.none.linkTitle"), "https://minecraft.net/realms/content-creator/");
++                        TextRenderingUtils.LineSegment var6 = TextRenderingUtils.LineSegment.link(I18n.get("mco.template.select.none.linkTitle"), "https://aka.ms/MinecraftRealmsContentCreator");
+                         RealmsSelectWorldTemplateScreen.this.noTemplatesMessage = TextRenderingUtils.decompose(var5, var6);
+                      }
+ 
+                      return null;
+                   } else {

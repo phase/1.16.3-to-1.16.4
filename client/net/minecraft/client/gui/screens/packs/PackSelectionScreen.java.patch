@@ -1,0 +1,15 @@
+--- net/minecraft/client/gui/screens/packs/PackSelectionScreen.java
++++ net/minecraft/client/gui/screens/packs/PackSelectionScreen.java
+@@ -274,11 +274,11 @@
+          return this.loadPackIcon(this.minecraft.getTextureManager(), var1);
+       });
+    }
+ 
+    static {
+-      DRAG_AND_DROP = (new TranslatableComponent("pack.dropInfo")).withStyle(ChatFormatting.DARK_GRAY);
++      DRAG_AND_DROP = (new TranslatableComponent("pack.dropInfo")).withStyle(ChatFormatting.GRAY);
+       DIRECTORY_BUTTON_TOOLTIP = new TranslatableComponent("pack.folderInfo");
+       DEFAULT_ICON = new ResourceLocation("textures/misc/unknown_pack.png");
+    }
+ 
+    static class Watcher implements AutoCloseable {

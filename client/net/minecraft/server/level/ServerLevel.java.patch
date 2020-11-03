@@ -1,0 +1,146 @@
+--- net/minecraft/server/level/ServerLevel.java
++++ net/minecraft/server/level/ServerLevel.java
+@@ -9,28 +9,32 @@
+ import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
+ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+ import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
+ import it.unimi.dsi.fastutil.longs.LongSet;
+ import it.unimi.dsi.fastutil.longs.LongSets;
++import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+ import it.unimi.dsi.fastutil.objects.ObjectIterator;
+ import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+ import java.io.BufferedWriter;
+ import java.io.IOException;
+ import java.io.Writer;
+ import java.nio.file.Files;
+ import java.nio.file.Path;
+ import java.util.ArrayList;
++import java.util.Collection;
++import java.util.Comparator;
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Map;
+ import java.util.Objects;
+ import java.util.Optional;
+ import java.util.Queue;
+ import java.util.Set;
+ import java.util.UUID;
+ import java.util.concurrent.Executor;
+ import java.util.function.BooleanSupplier;
++import java.util.function.Function;
+ import java.util.function.Predicate;
+ import java.util.stream.Collectors;
+ import java.util.stream.Stream;
+ import javax.annotation.Nonnull;
+ import javax.annotation.Nullable;
+@@ -55,10 +59,11 @@
+ import net.minecraft.network.protocol.game.ClientboundSetDefaultSpawnPositionPacket;
+ import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
+ import net.minecraft.network.protocol.game.ClientboundSoundPacket;
+ import net.minecraft.network.protocol.game.DebugPackets;
+ import net.minecraft.resources.ResourceKey;
++import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.server.MinecraftServer;
+ import net.minecraft.server.ServerScoreboard;
+ import net.minecraft.server.level.progress.ChunkProgressListener;
+ import net.minecraft.sounds.SoundEvent;
+ import net.minecraft.sounds.SoundSource;
+@@ -1362,12 +1367,12 @@
+       } finally {
+          if (var124 != null) {
+             if (var125 != null) {
+                try {
+                   var124.close();
+-               } catch (Throwable var109) {
+-                  var125.addSuppressed(var109);
++               } catch (Throwable var112) {
++                  var125.addSuppressed(var112);
+                }
+             } else {
+                var124.close();
+             }
+          }
+@@ -1386,12 +1391,12 @@
+       } finally {
+          if (var127 != null) {
+             if (var128 != null) {
+                try {
+                   var127.close();
+-               } catch (Throwable var108) {
+-                  var128.addSuppressed(var108);
++               } catch (Throwable var109) {
++                  var128.addSuppressed(var109);
+                }
+             } else {
+                var127.close();
+             }
+          }
+@@ -1410,12 +1415,12 @@
+       } finally {
+          if (var130 != null) {
+             if (var131 != null) {
+                try {
+                   var130.close();
+-               } catch (Throwable var112) {
+-                  var131.addSuppressed(var112);
++               } catch (Throwable var110) {
++                  var131.addSuppressed(var110);
+                }
+             } else {
+                var130.close();
+             }
+          }
+@@ -1434,12 +1439,12 @@
+       } finally {
+          if (var133 != null) {
+             if (var8 != null) {
+                try {
+                   var133.close();
+-               } catch (Throwable var110) {
+-                  var8.addSuppressed(var110);
++               } catch (Throwable var108) {
++                  var8.addSuppressed(var108);
+                }
+             } else {
+                var133.close();
+             }
+          }
+@@ -1518,10 +1523,38 @@
+ 
+    public ServerLevel getLevel() {
+       return this;
+    }
+ 
++   @VisibleForTesting
++   public String getWatchdogStats() {
++      return String.format("players: %s, entities: %d [%s], block_entities: %d [%s], block_ticks: %d, fluid_ticks: %d, chunk_source: %s", this.players.size(), this.entitiesById.size(), getTypeCount(this.entitiesById.values(), (var0) -> {
++         return Registry.ENTITY_TYPE.getKey(var0.getType());
++      }), this.tickableBlockEntities.size(), getTypeCount(this.tickableBlockEntities, (var0) -> {
++         return Registry.BLOCK_ENTITY_TYPE.getKey(var0.getType());
++      }), this.getBlockTicks().size(), this.getLiquidTicks().size(), this.gatherChunkSourceStats());
++   }
++
++   private static <T> String getTypeCount(Collection<T> var0, Function<T, ResourceLocation> var1) {
++      try {
++         Object2IntOpenHashMap var2 = new Object2IntOpenHashMap();
++         Iterator var3 = var0.iterator();
++
++         while(var3.hasNext()) {
++            Object var4 = var3.next();
++            ResourceLocation var5 = (ResourceLocation)var1.apply(var4);
++            var2.addTo(var5, 1);
++         }
++
++         return (String)var2.object2IntEntrySet().stream().sorted(Comparator.comparing(it.unimi.dsi.fastutil.objects.Object2IntMap.Entry::getIntValue).reversed()).limit(5L).map((var0x) -> {
++            return var0x.getKey() + ":" + var0x.getIntValue();
++         }).collect(Collectors.joining(","));
++      } catch (Exception var6) {
++         return "";
++      }
++   }
++
+    public static void makeObsidianPlatform(ServerLevel var0) {
+       BlockPos var1 = END_SPAWN_POINT;
+       int var2 = var1.getX();
+       int var3 = var1.getY() - 2;
+       int var4 = var1.getZ();

@@ -1,0 +1,28 @@
+--- com/mojang/realmsclient/util/task/GetServerDetailsTask.java
++++ com/mojang/realmsclient/util/task/GetServerDetailsTask.java
+@@ -95,11 +95,11 @@
+                            return null;
+                         };
+ 
+                         try {
+                            Minecraft.getInstance().getClientPackSource().downloadAndSelectResourcePack(var5.resourcePackUrl, var5.resourcePackHash).thenRun(() -> {
+-                              this.setScreen(new RealmsLongRunningMcoTaskScreen(this.lastScreen, new ConnectTask(this.lastScreen, var5)));
++                              this.setScreen(new RealmsLongRunningMcoTaskScreen(this.lastScreen, new ConnectTask(this.lastScreen, this.server, var5)));
+                            }).exceptionally(var3);
+                         } catch (Exception var8) {
+                            var3.apply(var8);
+                         }
+                      } else {
+@@ -112,11 +112,11 @@
+ 
+                   }
+ 
+                }, RealmsLongConfirmationScreen.Type.Info, var9, var10, true));
+             } else {
+-               this.setScreen(new RealmsLongRunningMcoTaskScreen(this.lastScreen, new ConnectTask(this.lastScreen, var5)));
++               this.setScreen(new RealmsLongRunningMcoTaskScreen(this.lastScreen, new ConnectTask(this.lastScreen, this.server, var5)));
+             }
+          } else {
+             this.error(new TranslatableComponent("mco.errorMessage.connectionFailure"));
+          }
+       }

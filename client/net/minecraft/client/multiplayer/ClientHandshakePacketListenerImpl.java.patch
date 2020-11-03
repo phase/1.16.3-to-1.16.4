@@ -1,0 +1,101 @@
+--- net/minecraft/client/multiplayer/ClientHandshakePacketListenerImpl.java
++++ net/minecraft/client/multiplayer/ClientHandshakePacketListenerImpl.java
+@@ -1,16 +1,18 @@
+ package net.minecraft.client.multiplayer;
+ 
+ import com.mojang.authlib.GameProfile;
+ import com.mojang.authlib.exceptions.AuthenticationException;
+ import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
++import com.mojang.authlib.exceptions.InsufficientPrivilegesException;
+ import com.mojang.authlib.exceptions.InvalidCredentialsException;
+ import com.mojang.authlib.minecraft.MinecraftSessionService;
+ import java.math.BigInteger;
+ import java.security.PublicKey;
+ import java.util.function.Consumer;
+ import javax.annotation.Nullable;
++import javax.crypto.Cipher;
+ import javax.crypto.SecretKey;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.gui.screens.DisconnectedScreen;
+ import net.minecraft.client.gui.screens.Screen;
+ import net.minecraft.network.Connection;
+@@ -28,10 +30,11 @@
+ import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
+ import net.minecraft.network.protocol.login.ServerboundKeyPacket;
+ import net.minecraft.realms.DisconnectedRealmsScreen;
+ import net.minecraft.realms.RealmsScreen;
+ import net.minecraft.util.Crypt;
++import net.minecraft.util.CryptException;
+ import net.minecraft.util.HttpUtil;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
+ public class ClientHandshakePacketListenerImpl implements ClientLoginPacketListener {
+@@ -49,29 +52,40 @@
+       this.parent = var3;
+       this.updateStatus = var4;
+    }
+ 
+    public void handleHello(ClientboundHelloPacket var1) {
+-      SecretKey var2 = Crypt.generateSecretKey();
+-      PublicKey var3 = var1.getPublicKey();
+-      String var4 = (new BigInteger(Crypt.digestData(var1.getServerId(), var3, var2))).toString(16);
+-      ServerboundKeyPacket var5 = new ServerboundKeyPacket(var2, var3, var1.getNonce());
++      Cipher var2;
++      Cipher var3;
++      String var4;
++      ServerboundKeyPacket var5;
++      try {
++         SecretKey var6 = Crypt.generateSecretKey();
++         PublicKey var7 = var1.getPublicKey();
++         var4 = (new BigInteger(Crypt.digestData(var1.getServerId(), var7, var6))).toString(16);
++         var2 = Crypt.getCipher(2, var6);
++         var3 = Crypt.getCipher(1, var6);
++         var5 = new ServerboundKeyPacket(var6, var7, var1.getNonce());
++      } catch (CryptException var8) {
++         throw new IllegalStateException("Protocol error", var8);
++      }
++
+       this.updateStatus.accept(new TranslatableComponent("connect.authorizing"));
+       HttpUtil.DOWNLOAD_EXECUTOR.submit(() -> {
+-         Component var4x = this.authenticateServer(var4);
+-         if (var4x != null) {
++         Component var5x = this.authenticateServer(var4);
++         if (var5x != null) {
+             if (this.minecraft.getCurrentServer() == null || !this.minecraft.getCurrentServer().isLan()) {
+-               this.connection.disconnect(var4x);
++               this.connection.disconnect(var5x);
+                return;
+             }
+ 
+-            LOGGER.warn(var4x.getString());
++            LOGGER.warn(var5x.getString());
+          }
+ 
+          this.updateStatus.accept(new TranslatableComponent("connect.encrypting"));
+-         this.connection.send(var5, (var2x) -> {
+-            this.connection.setEncryptionKey(var2);
++         this.connection.send(var5, (var3x) -> {
++            this.connection.setEncryptionKey(var2, var3);
+          });
+       });
+    }
+ 
+    @Nullable
+@@ -81,12 +95,14 @@
+          return null;
+       } catch (AuthenticationUnavailableException var3) {
+          return new TranslatableComponent("disconnect.loginFailedInfo", new Object[]{new TranslatableComponent("disconnect.loginFailedInfo.serversUnavailable")});
+       } catch (InvalidCredentialsException var4) {
+          return new TranslatableComponent("disconnect.loginFailedInfo", new Object[]{new TranslatableComponent("disconnect.loginFailedInfo.invalidSession")});
+-      } catch (AuthenticationException var5) {
+-         return new TranslatableComponent("disconnect.loginFailedInfo", new Object[]{var5.getMessage()});
++      } catch (InsufficientPrivilegesException var5) {
++         return new TranslatableComponent("disconnect.loginFailedInfo", new Object[]{new TranslatableComponent("disconnect.loginFailedInfo.insufficientPrivileges")});
++      } catch (AuthenticationException var6) {
++         return new TranslatableComponent("disconnect.loginFailedInfo", new Object[]{var6.getMessage()});
+       }
+    }
+ 
+    private MinecraftSessionService getMinecraftSessionService() {
+       return this.minecraft.getMinecraftSessionService();

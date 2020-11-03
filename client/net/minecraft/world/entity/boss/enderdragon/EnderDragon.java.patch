@@ -1,0 +1,15 @@
+--- net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
++++ net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
+@@ -369,11 +369,11 @@
+       while(var6.hasNext()) {
+          Entity var7 = (Entity)var6.next();
+          if (var7 instanceof LivingEntity) {
+             double var8 = var7.getX() - var2;
+             double var10 = var7.getZ() - var4;
+-            double var12 = var8 * var8 + var10 * var10;
++            double var12 = Math.max(var8 * var8 + var10 * var10, 0.1D);
+             var7.push(var8 / var12 * 4.0D, 0.20000000298023224D, var10 / var12 * 4.0D);
+             if (!this.phaseManager.getCurrentPhase().isSitting() && ((LivingEntity)var7).getLastHurtByMobTimestamp() < var7.tickCount - 2) {
+                var7.hurt(DamageSource.mobAttack(this), 5.0F);
+                this.doEnchantDamageEffects(this, var7);
+             }

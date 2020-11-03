@@ -1,0 +1,38 @@
+--- net/minecraft/client/gui/chat/NarratorChatListener.java
++++ net/minecraft/client/gui/chat/NarratorChatListener.java
+@@ -22,25 +22,23 @@
+ 
+    public NarratorChatListener() {
+    }
+ 
+    public void handle(ChatType var1, Component var2, UUID var3) {
+-      if (!Minecraft.getInstance().isBlocked(var3)) {
+-         NarratorStatus var4 = getStatus();
+-         if (var4 != NarratorStatus.OFF && this.narrator.active()) {
+-            if (var4 == NarratorStatus.ALL || var4 == NarratorStatus.CHAT && var1 == ChatType.CHAT || var4 == NarratorStatus.SYSTEM && var1 == ChatType.SYSTEM) {
+-               Object var5;
+-               if (var2 instanceof TranslatableComponent && "chat.type.text".equals(((TranslatableComponent)var2).getKey())) {
+-                  var5 = new TranslatableComponent("chat.type.text.narrate", ((TranslatableComponent)var2).getArgs());
+-               } else {
+-                  var5 = var2;
+-               }
+-
+-               this.doSay(var1.shouldInterrupt(), ((Component)var5).getString());
++      NarratorStatus var4 = getStatus();
++      if (var4 != NarratorStatus.OFF && this.narrator.active()) {
++         if (var4 == NarratorStatus.ALL || var4 == NarratorStatus.CHAT && var1 == ChatType.CHAT || var4 == NarratorStatus.SYSTEM && var1 == ChatType.SYSTEM) {
++            Object var5;
++            if (var2 instanceof TranslatableComponent && "chat.type.text".equals(((TranslatableComponent)var2).getKey())) {
++               var5 = new TranslatableComponent("chat.type.text.narrate", ((TranslatableComponent)var2).getArgs());
++            } else {
++               var5 = var2;
+             }
+ 
++            this.doSay(var1.shouldInterrupt(), ((Component)var5).getString());
+          }
++
+       }
+    }
+ 
+    public void sayNow(String var1) {
+       NarratorStatus var2 = getStatus();

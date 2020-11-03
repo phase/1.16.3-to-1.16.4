@@ -1,0 +1,17 @@
+--- net/minecraft/world/level/Level.java
++++ net/minecraft/world/level/Level.java
+@@ -516,10 +516,14 @@
+       var13.explode();
+       var13.finalizeExplosion(true);
+       return var13;
+    }
+ 
++   public String gatherChunkSourceStats() {
++      return this.getChunkSource().gatherStats();
++   }
++
+    @Nullable
+    public BlockEntity getBlockEntity(BlockPos var1) {
+       if (isOutsideBuildHeight(var1)) {
+          return null;
+       } else if (!this.isClientSide && Thread.currentThread() != this.thread) {

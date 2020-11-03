@@ -1,0 +1,19 @@
+--- com/mojang/realmsclient/gui/screens/RealmsParentalConsentScreen.java
++++ com/mojang/realmsclient/gui/screens/RealmsParentalConsentScreen.java
+@@ -28,14 +28,14 @@
+       Component var2 = CommonComponents.GUI_BACK;
+       int var3 = Math.max(this.font.width((FormattedText)var1), this.font.width((FormattedText)var2)) + 30;
+       TranslatableComponent var4 = new TranslatableComponent("mco.account.privacy.info");
+       int var5 = (int)((double)this.font.width((FormattedText)var4) * 1.2D);
+       this.addButton(new Button(this.width / 2 - var5 / 2, row(11), var5, 20, var4, (var0) -> {
+-         Util.getPlatform().openUri("https://minecraft.net/privacy/gdpr/");
++         Util.getPlatform().openUri("https://aka.ms/MinecraftGDPR");
+       }));
+       this.addButton(new Button(this.width / 2 - (var3 + 5), row(13), var3, 20, var1, (var0) -> {
+-         Util.getPlatform().openUri("https://minecraft.net/update-account");
++         Util.getPlatform().openUri("https://aka.ms/UpdateMojangAccount");
+       }));
+       this.addButton(new Button(this.width / 2 + 5, row(13), var3, 20, var2, (var1x) -> {
+          this.minecraft.setScreen(this.nextScreen);
+       }));
+       this.messageLines = MultiLineLabel.create(this.font, MESSAGE, (int)Math.round((double)this.width * 0.9D));

@@ -1,0 +1,26 @@
+--- net/minecraft/server/dedicated/DedicatedServerProperties.java
++++ net/minecraft/server/dedicated/DedicatedServerProperties.java
+@@ -53,10 +53,11 @@
+    public final int maxWorldSize;
+    public final boolean syncChunkWrites;
+    public final boolean enableJmxMonitoring;
+    public final boolean enableStatus;
+    public final int entityBroadcastRangePercentage;
++   public final String textFilteringConfig;
+    public final Settings<DedicatedServerProperties>.MutableValue<Integer> playerIdleTimeout;
+    public final Settings<DedicatedServerProperties>.MutableValue<Boolean> whiteList;
+    public final WorldGenSettings worldGenSettings;
+ 
+    public DedicatedServerProperties(Properties var1, RegistryAccess var2) {
+@@ -102,10 +103,11 @@
+       this.enableJmxMonitoring = this.get("enable-jmx-monitoring", false);
+       this.enableStatus = this.get("enable-status", true);
+       this.entityBroadcastRangePercentage = this.get("entity-broadcast-range-percentage", (var0) -> {
+          return Mth.clamp(var0, 10, 1000);
+       }, 100);
++      this.textFilteringConfig = this.get("text-filtering-config", "");
+       this.playerIdleTimeout = this.getMutable("player-idle-timeout", 0);
+       this.whiteList = this.getMutable("white-list", false);
+       this.worldGenSettings = WorldGenSettings.create(var2, var1);
+    }
+ 

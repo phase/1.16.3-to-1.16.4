@@ -1,0 +1,18 @@
+--- com/mojang/authlib/yggdrasil/response/BlockListResponse.java
++++ com/mojang/authlib/yggdrasil/response/BlockListResponse.java
+@@ -1,0 +1,15 @@
++package com.mojang.authlib.yggdrasil.response;
++
++import java.util.Set;
++import java.util.UUID;
++
++public class BlockListResponse extends Response {
++   private Set<UUID> blockedProfiles;
++
++   public BlockListResponse() {
++   }
++
++   public Set<UUID> getBlockedProfiles() {
++      return this.blockedProfiles;
++   }
++}

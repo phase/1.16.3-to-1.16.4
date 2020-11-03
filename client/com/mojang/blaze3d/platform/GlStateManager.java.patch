@@ -1,0 +1,59 @@
+--- com/mojang/blaze3d/platform/GlStateManager.java
++++ com/mojang/blaze3d/platform/GlStateManager.java
+@@ -39,10 +39,11 @@
+    private static final GlStateManager.CullState CULL = new GlStateManager.CullState();
+    private static final GlStateManager.PolygonOffsetState POLY_OFFSET = new GlStateManager.PolygonOffsetState();
+    private static final GlStateManager.ColorLogicState COLOR_LOGIC = new GlStateManager.ColorLogicState();
+    private static final GlStateManager.TexGenState TEX_GEN = new GlStateManager.TexGenState();
+    private static final GlStateManager.StencilState STENCIL = new GlStateManager.StencilState();
++   private static final GlStateManager.ScissorState SCISSOR = new GlStateManager.ScissorState();
+    private static final FloatBuffer FLOAT_ARG_BUFFER = MemoryTracker.createFloatBuffer(4);
+    private static int activeTexture;
+    private static final GlStateManager.TextureState[] TEXTURES = (GlStateManager.TextureState[])IntStream.range(0, 12).mapToObj((var0) -> {
+       return new GlStateManager.TextureState();
+    }).toArray((var0) -> {
+@@ -153,10 +154,25 @@
+    public static void _normal3f(float var0, float var1, float var2) {
+       RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+       GL11.glNormal3f(var0, var1, var2);
+    }
+ 
++   public static void _disableScissorTest() {
++      RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
++      SCISSOR.mode.disable();
++   }
++
++   public static void _enableScissorTest() {
++      RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
++      SCISSOR.mode.enable();
++   }
++
++   public static void _scissorBox(int var0, int var1, int var2, int var3) {
++      RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
++      GL20.glScissor(var0, var1, var2, var3);
++   }
++
+    public static void _disableDepthTest() {
+       RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+       DEPTH.mode.disable();
+    }
+ 
+@@ -1439,10 +1455,18 @@
+          this.r = new GlStateManager.TexGenCoord(8194, 3170);
+          this.q = new GlStateManager.TexGenCoord(8195, 3171);
+       }
+    }
+ 
++   static class ScissorState {
++      public final GlStateManager.BooleanState mode;
++
++      private ScissorState() {
++         this.mode = new GlStateManager.BooleanState(3089);
++      }
++   }
++
+    static class StencilState {
+       public final GlStateManager.StencilFunc func;
+       public int mask;
+       public int fail;
+       public int zfail;

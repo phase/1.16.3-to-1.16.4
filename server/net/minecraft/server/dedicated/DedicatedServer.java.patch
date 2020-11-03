@@ -1,0 +1,84 @@
+--- net/minecraft/server/dedicated/DedicatedServer.java
++++ net/minecraft/server/dedicated/DedicatedServer.java
+@@ -32,18 +32,20 @@
+ import net.minecraft.server.MinecraftServer;
+ import net.minecraft.server.ServerInterface;
+ import net.minecraft.server.ServerResources;
+ import net.minecraft.server.gui.MinecraftServerGui;
+ import net.minecraft.server.level.ServerLevel;
++import net.minecraft.server.level.ServerPlayer;
+ import net.minecraft.server.level.progress.ChunkProgressListenerFactory;
++import net.minecraft.server.network.TextFilter;
++import net.minecraft.server.network.TextFilterClient;
+ import net.minecraft.server.packs.repository.PackRepository;
+ import net.minecraft.server.players.GameProfileCache;
+ import net.minecraft.server.players.OldUsersConverter;
+ import net.minecraft.server.rcon.RconConsoleSource;
+ import net.minecraft.server.rcon.thread.QueryThreadGs4;
+ import net.minecraft.server.rcon.thread.RconThread;
+-import net.minecraft.util.Crypt;
+ import net.minecraft.util.Mth;
+ import net.minecraft.util.monitoring.jmx.MinecraftServerStatistics;
+ import net.minecraft.world.Snooper;
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.item.CreativeModeTab;
+@@ -65,15 +67,18 @@
+    private final RconConsoleSource rconConsoleSource;
+    private RconThread rconThread;
+    private final DedicatedServerSettings settings;
+    @Nullable
+    private MinecraftServerGui gui;
++   @Nullable
++   private final TextFilterClient textFilterClient;
+ 
+    public DedicatedServer(Thread var1, RegistryAccess.RegistryHolder var2, LevelStorageSource.LevelStorageAccess var3, PackRepository var4, ServerResources var5, WorldData var6, DedicatedServerSettings var7, DataFixer var8, MinecraftSessionService var9, GameProfileRepository var10, GameProfileCache var11, ChunkProgressListenerFactory var12) {
+       super(var1, var2, var3, var6, var4, Proxy.NO_PROXY, var8, var5, var9, var10, var11, var12);
+       this.settings = var7;
+       this.rconConsoleSource = new RconConsoleSource(this);
++      this.textFilterClient = null;
+    }
+ 
+    public boolean initServer() throws IOException {
+       Thread var1 = new Thread("Server console handler") {
+          public void run() {
+@@ -124,12 +129,11 @@
+ 
+       if (this.getPort() < 0) {
+          this.setPort(var2.serverPort);
+       }
+ 
+-      LOGGER.info("Generating keypair");
+-      this.setKeyPair(Crypt.generateKeyPair());
++      this.initializeKeyPair();
+       LOGGER.info((String)"Starting Minecraft server on {}:{}", (Object)(this.getLocalIp().isEmpty() ? "*" : this.getLocalIp()), (Object)this.getPort());
+ 
+       try {
+          this.getConnection().startTcpServerListener(var3, this.getPort());
+       } catch (IOException var10) {
+@@ -260,10 +264,14 @@
+       String var1 = this.getServerModName();
+       return !"vanilla".equals(var1) ? Optional.of("Definitely; Server brand changed to '" + var1 + "'") : Optional.empty();
+    }
+ 
+    public void onServerExit() {
++      if (this.textFilterClient != null) {
++         this.textFilterClient.close();
++      }
++
+       if (this.gui != null) {
+          this.gui.close();
+       }
+ 
+       if (this.rconThread != null) {
+@@ -518,6 +526,11 @@
+    }
+ 
+    public boolean forceSynchronousWrites() {
+       return this.settings.getProperties().syncChunkWrites;
+    }
++
++   @Nullable
++   public TextFilter createTextFilterForPlayer(ServerPlayer var1) {
++      return this.textFilterClient != null ? this.textFilterClient.createContext(var1.getGameProfile()) : null;
++   }
+ }

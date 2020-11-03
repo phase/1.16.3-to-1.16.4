@@ -1,0 +1,17 @@
+--- net/minecraft/SharedConstants.java
++++ net/minecraft/SharedConstants.java
+@@ -39,10 +39,14 @@
+       }
+ 
+       return CURRENT_VERSION;
+    }
+ 
++   public static int getProtocolVersion() {
++      return 754;
++   }
++
+    static {
+       NETTY_LEAK_DETECTION = ResourceLeakDetector.Level.DISABLED;
+       MAXIMUM_TICK_TIME_NANOS = Duration.ofMillis(300L).toNanos();
+       CHECK_DATA_FIXER_SCHEMA = true;
+       ILLEGAL_FILE_CHARACTERS = new char[]{'/', '\n', '\r', '\t', '\u0000', '\f', '`', '?', '*', '\\', '<', '>', '|', '"', ':'};

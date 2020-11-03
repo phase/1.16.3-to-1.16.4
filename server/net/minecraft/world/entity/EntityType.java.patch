@@ -1,0 +1,20 @@
+--- net/minecraft/world/entity/EntityType.java
++++ net/minecraft/world/entity/EntityType.java
+@@ -442,14 +442,14 @@
+    }
+ 
+    public boolean isBlockDangerous(BlockState var1) {
+       if (this.immuneTo.contains(var1.getBlock())) {
+          return false;
+-      } else if (this.fireImmune || !var1.is(BlockTags.FIRE) && !var1.is(Blocks.MAGMA_BLOCK) && !CampfireBlock.isLitCampfire(var1) && !var1.is(Blocks.LAVA)) {
+-         return var1.is(Blocks.WITHER_ROSE) || var1.is(Blocks.SWEET_BERRY_BUSH) || var1.is(Blocks.CACTUS);
+-      } else {
++      } else if (!this.fireImmune && (var1.is(BlockTags.FIRE) || var1.is(Blocks.MAGMA_BLOCK) || CampfireBlock.isLitCampfire(var1) || var1.is(Blocks.LAVA))) {
+          return true;
++      } else {
++         return var1.is(Blocks.WITHER_ROSE) || var1.is(Blocks.SWEET_BERRY_BUSH) || var1.is(Blocks.CACTUS);
+       }
+    }
+ 
+    public EntityDimensions getDimensions() {
+       return this.dimensions;

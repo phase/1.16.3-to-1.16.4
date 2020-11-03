@@ -1,0 +1,14 @@
+--- net/minecraft/client/gui/screens/recipebook/RecipeBookComponent.java
++++ net/minecraft/client/gui/screens/recipebook/RecipeBookComponent.java
+@@ -234,10 +234,11 @@
+          if (this.timesInventoryChanged != this.minecraft.player.inventory.getTimesChanged()) {
+             this.updateStackedContents();
+             this.timesInventoryChanged = this.minecraft.player.inventory.getTimesChanged();
+          }
+ 
++         this.searchBox.tick();
+       }
+    }
+ 
+    private void updateStackedContents() {
+       this.stackedContents.clear();

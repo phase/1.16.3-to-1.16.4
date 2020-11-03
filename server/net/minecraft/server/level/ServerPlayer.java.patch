@@ -1,0 +1,51 @@
+--- net/minecraft/server/level/ServerPlayer.java
++++ net/minecraft/server/level/ServerPlayer.java
+@@ -68,10 +68,11 @@
+ import net.minecraft.resources.ResourceKey;
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.server.MinecraftServer;
+ import net.minecraft.server.PlayerAdvancements;
+ import net.minecraft.server.network.ServerGamePacketListenerImpl;
++import net.minecraft.server.network.TextFilter;
+ import net.minecraft.server.players.PlayerList;
+ import net.minecraft.sounds.SoundEvent;
+ import net.minecraft.sounds.SoundSource;
+ import net.minecraft.stats.ServerRecipeBook;
+ import net.minecraft.stats.ServerStatsCounter;
+@@ -168,10 +169,12 @@
+    private ResourceKey<Level> respawnDimension;
+    @Nullable
+    private BlockPos respawnPosition;
+    private boolean respawnForced;
+    private float respawnAngle;
++   @Nullable
++   private final TextFilter textFilter;
+    private int containerCounter;
+    public boolean ignoreSlotUpdateHack;
+    public int latency;
+    public boolean wonGame;
+ 
+@@ -183,10 +186,11 @@
+       this.server = var1;
+       this.stats = var1.getPlayerList().getPlayerStats(this);
+       this.advancements = var1.getPlayerList().getPlayerAdvancements(this);
+       this.maxUpStep = 1.0F;
+       this.fudgeSpawnLocation(var2);
++      this.textFilter = var1.createTextFilterForPlayer(this);
+    }
+ 
+    private void fudgeSpawnLocation(ServerLevel var1) {
+       BlockPos var2 = var1.getSharedSpawnPos();
+       if (var1.dimensionType().hasSkyLight() && var1.getServer().getWorldData().getGameType() != GameType.ADVENTURE) {
+@@ -1414,6 +1418,11 @@
+          }
+ 
+          return var4;
+       }
+    }
++
++   @Nullable
++   public TextFilter getTextFilter() {
++      return this.textFilter;
++   }
+ }

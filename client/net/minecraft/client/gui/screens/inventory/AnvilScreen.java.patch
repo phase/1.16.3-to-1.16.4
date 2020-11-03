@@ -1,0 +1,18 @@
+--- net/minecraft/client/gui/screens/inventory/AnvilScreen.java
++++ net/minecraft/client/gui/screens/inventory/AnvilScreen.java
+@@ -24,10 +24,15 @@
+    public AnvilScreen(AnvilMenu var1, Inventory var2, Component var3) {
+       super(var1, var2, var3, ANVIL_LOCATION);
+       this.titleLabelX = 60;
+    }
+ 
++   public void tick() {
++      super.tick();
++      this.name.tick();
++   }
++
+    protected void subInit() {
+       this.minecraft.keyboardHandler.setSendRepeatsToGui(true);
+       int var1 = (this.width - this.imageWidth) / 2;
+       int var2 = (this.height - this.imageHeight) / 2;
+       this.name = new EditBox(this.font, var1 + 62, var2 + 24, 103, 12, new TranslatableComponent("container.repair"));

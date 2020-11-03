@@ -1,0 +1,27 @@
+--- net/minecraft/server/Main.java
++++ net/minecraft/server/Main.java
+@@ -10,11 +10,10 @@
+ import java.io.File;
+ import java.net.Proxy;
+ import java.nio.file.Path;
+ import java.nio.file.Paths;
+ import java.util.Optional;
+-import java.util.UUID;
+ import java.util.concurrent.CompletableFuture;
+ import java.util.function.BooleanSupplier;
+ import joptsimple.AbstractOptionSpec;
+ import joptsimple.ArgumentAcceptingOptionSpec;
+ import joptsimple.NonOptionArgumentSpec;
+@@ -105,11 +104,11 @@
+             LOGGER.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
+             return;
+          }
+ 
+          File var22 = new File((String)var16.valueOf(var11));
+-         YggdrasilAuthenticationService var23 = new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString());
++         YggdrasilAuthenticationService var23 = new YggdrasilAuthenticationService(Proxy.NO_PROXY);
+          MinecraftSessionService var24 = var23.createMinecraftSessionService();
+          GameProfileRepository var25 = var23.createProfileRepository();
+          GameProfileCache var26 = new GameProfileCache(var25, new File(var22, MinecraftServer.USERID_CACHE_FILE.getName()));
+          String var27 = (String)Optional.ofNullable(var16.valueOf(var12)).orElse(var19.getProperties().levelName);
+          LevelStorageSource var28 = LevelStorageSource.createDefault(var22.toPath());

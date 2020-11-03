@@ -1,0 +1,30 @@
+--- net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
++++ net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
+@@ -23,19 +23,20 @@
+ 
+    public void handleIntention(ClientIntentionPacket var1) {
+       switch(var1.getIntention()) {
+       case LOGIN:
+          this.connection.setProtocol(ConnectionProtocol.LOGIN);
+-         TranslatableComponent var2;
+-         if (var1.getProtocolVersion() > SharedConstants.getCurrentVersion().getProtocolVersion()) {
+-            var2 = new TranslatableComponent("multiplayer.disconnect.outdated_server", new Object[]{SharedConstants.getCurrentVersion().getName()});
++         if (var1.getProtocolVersion() != SharedConstants.getCurrentVersion().getProtocolVersion()) {
++            TranslatableComponent var2;
++            if (var1.getProtocolVersion() < 754) {
++               var2 = new TranslatableComponent("multiplayer.disconnect.outdated_client", new Object[]{SharedConstants.getCurrentVersion().getName()});
++            } else {
++               var2 = new TranslatableComponent("multiplayer.disconnect.incompatible", new Object[]{SharedConstants.getCurrentVersion().getName()});
++            }
++
+             this.connection.send(new ClientboundLoginDisconnectPacket(var2));
+             this.connection.disconnect(var2);
+-         } else if (var1.getProtocolVersion() < SharedConstants.getCurrentVersion().getProtocolVersion()) {
+-            var2 = new TranslatableComponent("multiplayer.disconnect.outdated_client", new Object[]{SharedConstants.getCurrentVersion().getName()});
+-            this.connection.send(new ClientboundLoginDisconnectPacket(var2));
+-            this.connection.disconnect(var2);
+          } else {
+             this.connection.setListener(new ServerLoginPacketListenerImpl(this.server, this.connection));
+          }
+          break;
+       case STATUS:

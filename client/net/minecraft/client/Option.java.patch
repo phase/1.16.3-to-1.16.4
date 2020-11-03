@@ -1,0 +1,44 @@
+--- net/minecraft/client/Option.java
++++ net/minecraft/client/Option.java
+@@ -229,12 +229,14 @@
+    public static final CycleOption MAIN_HAND;
+    public static final CycleOption NARRATOR;
+    public static final CycleOption PARTICLES;
+    public static final CycleOption RENDER_CLOUDS;
+    public static final CycleOption TEXT_BACKGROUND;
++   private static final Component CHAT_TOOLTIP_HIDE_MATCHED_NAMES;
+    public static final BooleanOption AUTO_JUMP;
+    public static final BooleanOption AUTO_SUGGESTIONS;
++   public static final BooleanOption HIDE_MATCHED_NAMES;
+    public static final BooleanOption CHAT_COLOR;
+    public static final BooleanOption CHAT_LINKS;
+    public static final BooleanOption CHAT_LINKS_PROMPT;
+    public static final BooleanOption DISCRETE_MOUSE_SCROLL;
+    public static final BooleanOption ENABLE_VSYNC;
+@@ -363,20 +365,26 @@
+       TEXT_BACKGROUND = new CycleOption("options.accessibility.text_background", (var0, var1) -> {
+          var0.backgroundForChatOnly = !var0.backgroundForChatOnly;
+       }, (var0, var1) -> {
+          return var1.genericValueLabel(new TranslatableComponent(var0.backgroundForChatOnly ? "options.accessibility.text_background.chat" : "options.accessibility.text_background.everywhere"));
+       });
++      CHAT_TOOLTIP_HIDE_MATCHED_NAMES = new TranslatableComponent("options.hideMatchedNames.tooltip");
+       AUTO_JUMP = new BooleanOption("options.autoJump", (var0) -> {
+          return var0.autoJump;
+       }, (var0, var1) -> {
+          var0.autoJump = var1;
+       });
+       AUTO_SUGGESTIONS = new BooleanOption("options.autoSuggestCommands", (var0) -> {
+          return var0.autoSuggestions;
+       }, (var0, var1) -> {
+          var0.autoSuggestions = var1;
+       });
++      HIDE_MATCHED_NAMES = new BooleanOption("options.hideMatchedNames", CHAT_TOOLTIP_HIDE_MATCHED_NAMES, (var0) -> {
++         return var0.hideMatchedNames;
++      }, (var0, var1) -> {
++         var0.hideMatchedNames = var1;
++      });
+       CHAT_COLOR = new BooleanOption("options.chat.color", (var0) -> {
+          return var0.chatColors;
+       }, (var0, var1) -> {
+          var0.chatColors = var1;
+       });

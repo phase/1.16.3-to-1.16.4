@@ -1,0 +1,23 @@
+--- net/minecraft/client/gui/chat/StandardChatListener.java
++++ net/minecraft/client/gui/chat/StandardChatListener.java
+@@ -11,15 +11,13 @@
+    public StandardChatListener(Minecraft var1) {
+       this.minecraft = var1;
+    }
+ 
+    public void handle(ChatType var1, Component var2, UUID var3) {
+-      if (!this.minecraft.isBlocked(var3)) {
+-         if (var1 != ChatType.CHAT) {
+-            this.minecraft.gui.getChat().addMessage(var2);
+-         } else {
+-            this.minecraft.gui.getChat().enqueueMessage(var2);
+-         }
+-
++      if (var1 != ChatType.CHAT) {
++         this.minecraft.gui.getChat().addMessage(var2);
++      } else {
++         this.minecraft.gui.getChat().enqueueMessage(var2);
+       }
++
+    }
+ }

@@ -1,0 +1,29 @@
+--- com/mojang/realmsclient/dto/RealmsServer.java
++++ com/mojang/realmsclient/dto/RealmsServer.java
+@@ -18,10 +18,11 @@
+ import java.util.Locale;
+ import java.util.Map;
+ import java.util.Objects;
+ import java.util.Map.Entry;
+ import net.minecraft.client.Minecraft;
++import net.minecraft.client.multiplayer.ServerData;
+ import org.apache.commons.lang3.builder.EqualsBuilder;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
+ public class RealmsServer extends ValueObject {
+@@ -289,10 +290,14 @@
+ 
+    public String getWorldName(int var1) {
+       return this.name + " (" + ((RealmsWorldOptions)this.slots.get(var1)).getSlotName(var1) + ")";
+    }
+ 
++   public ServerData toServerData(String var1) {
++      return new ServerData(this.name, var1, false);
++   }
++
+    public static enum WorldType {
+       NORMAL,
+       MINIGAME,
+       ADVENTUREMAP,
+       EXPERIENCE,

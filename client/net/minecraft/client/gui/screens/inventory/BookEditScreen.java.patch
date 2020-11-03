@@ -1,0 +1,16 @@
+--- net/minecraft/client/gui/screens/inventory/BookEditScreen.java
++++ net/minecraft/client/gui/screens/inventory/BookEditScreen.java
+@@ -218,11 +218,12 @@
+          if (var1) {
+             this.book.addTagElement("author", StringTag.valueOf(this.owner.getGameProfile().getName()));
+             this.book.addTagElement("title", StringTag.valueOf(this.title.trim()));
+          }
+ 
+-         this.minecraft.getConnection().send((Packet)(new ServerboundEditBookPacket(this.book, var1, this.hand)));
++         int var3 = this.hand == InteractionHand.MAIN_HAND ? this.owner.inventory.selected : 40;
++         this.minecraft.getConnection().send((Packet)(new ServerboundEditBookPacket(this.book, var1, var3)));
+       }
+    }
+ 
+    private void appendPageToBook() {
+       if (this.getNumPages() < 100) {

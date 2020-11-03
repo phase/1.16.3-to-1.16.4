@@ -1,0 +1,28 @@
+--- net/minecraft/client/server/IntegratedServer.java
++++ net/minecraft/client/server/IntegratedServer.java
+@@ -21,11 +21,10 @@
+ import net.minecraft.server.ServerResources;
+ import net.minecraft.server.level.ServerPlayer;
+ import net.minecraft.server.level.progress.ChunkProgressListenerFactory;
+ import net.minecraft.server.packs.repository.PackRepository;
+ import net.minecraft.server.players.GameProfileCache;
+-import net.minecraft.util.Crypt;
+ import net.minecraft.util.profiling.ProfilerFiller;
+ import net.minecraft.world.Snooper;
+ import net.minecraft.world.level.GameType;
+ import net.minecraft.world.level.storage.LevelStorageSource;
+ import net.minecraft.world.level.storage.WorldData;
+@@ -52,12 +51,11 @@
+    public boolean initServer() {
+       LOGGER.info("Starting integrated minecraft server version " + SharedConstants.getCurrentVersion().getName());
+       this.setUsesAuthentication(true);
+       this.setPvpAllowed(true);
+       this.setFlightAllowed(true);
+-      LOGGER.info("Generating keypair");
+-      this.setKeyPair(Crypt.generateKeyPair());
++      this.initializeKeyPair();
+       this.loadLevel();
+       this.setMotd(this.getSingleplayerName() + " - " + this.getWorldData().getLevelName());
+       return true;
+    }
+ 

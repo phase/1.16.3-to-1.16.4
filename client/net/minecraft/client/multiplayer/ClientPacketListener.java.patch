@@ -1,0 +1,36 @@
+--- net/minecraft/client/multiplayer/ClientPacketListener.java
++++ net/minecraft/client/multiplayer/ClientPacketListener.java
+@@ -1518,16 +1518,18 @@
+       Iterator var2 = var1.getEntries().iterator();
+ 
+       while(var2.hasNext()) {
+          ClientboundPlayerInfoPacket.PlayerUpdate var3 = (ClientboundPlayerInfoPacket.PlayerUpdate)var2.next();
+          if (var1.getAction() == ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER) {
++            this.minecraft.getPlayerSocialManager().removePlayer(var3.getProfile().getId());
+             this.playerInfoMap.remove(var3.getProfile().getId());
+          } else {
+             PlayerInfo var4 = (PlayerInfo)this.playerInfoMap.get(var3.getProfile().getId());
+             if (var1.getAction() == ClientboundPlayerInfoPacket.Action.ADD_PLAYER) {
+                var4 = new PlayerInfo(var3);
+                this.playerInfoMap.put(var4.getProfile().getId(), var4);
++               this.minecraft.getPlayerSocialManager().addPlayer(var4);
+             }
+ 
+             if (var4 != null) {
+                switch(var1.getAction()) {
+                case ADD_PLAYER:
+@@ -2206,10 +2208,14 @@
+ 
+    public Collection<PlayerInfo> getOnlinePlayers() {
+       return this.playerInfoMap.values();
+    }
+ 
++   public Collection<UUID> getOnlinePlayerIds() {
++      return this.playerInfoMap.keySet();
++   }
++
+    @Nullable
+    public PlayerInfo getPlayerInfo(UUID var1) {
+       return (PlayerInfo)this.playerInfoMap.get(var1);
+    }
+ 

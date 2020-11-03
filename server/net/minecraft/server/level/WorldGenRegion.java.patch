@@ -1,0 +1,48 @@
+--- net/minecraft/server/level/WorldGenRegion.java
++++ net/minecraft/server/level/WorldGenRegion.java
+@@ -18,10 +18,11 @@
+ import net.minecraft.world.DifficultyInstance;
+ import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.level.ChunkPos;
++import net.minecraft.world.level.StructureFeatureManager;
+ import net.minecraft.world.level.TickList;
+ import net.minecraft.world.level.WorldGenLevel;
+ import net.minecraft.world.level.biome.Biome;
+ import net.minecraft.world.level.biome.BiomeManager;
+ import net.minecraft.world.level.block.Block;
+@@ -63,10 +64,11 @@
+       return this.getChunk(var1x).getLiquidTicks();
+    });
+    private final BiomeManager biomeManager;
+    private final ChunkPos firstPos;
+    private final ChunkPos lastPos;
++   private final StructureFeatureManager structureFeatureManager;
+ 
+    public WorldGenRegion(ServerLevel var1, List<ChunkAccess> var2) {
+       int var3 = Mth.floor(Math.sqrt((double)var2.size()));
+       if (var3 * var3 != var2.size()) {
+          throw (IllegalStateException)Util.pauseInIde(new IllegalStateException("Cache size is not a square."));
+@@ -82,10 +84,11 @@
+          this.random = var1.getRandom();
+          this.dimensionType = var1.dimensionType();
+          this.biomeManager = new BiomeManager(this, BiomeManager.obfuscateSeed(this.seed), var1.dimensionType().getBiomeZoomer());
+          this.firstPos = ((ChunkAccess)var2.get(0)).getPos();
+          this.lastPos = ((ChunkAccess)var2.get(var2.size() - 1)).getPos();
++         this.structureFeatureManager = var1.structureFeatureManager().forWorldGenRegion(this);
+       }
+    }
+ 
+    public int getCenterX() {
+       return this.x;
+@@ -338,8 +341,8 @@
+    public List<Player> players() {
+       return Collections.emptyList();
+    }
+ 
+    public Stream<? extends StructureStart<?>> startsForFeature(SectionPos var1, StructureFeature<?> var2) {
+-      return this.level.startsForFeature(var1, var2);
++      return this.structureFeatureManager.startsForFeature(var1, var2);
+    }
+ }

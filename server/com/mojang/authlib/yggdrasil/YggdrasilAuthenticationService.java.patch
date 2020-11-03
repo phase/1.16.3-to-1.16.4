@@ -1,0 +1,123 @@
+--- com/mojang/authlib/yggdrasil/YggdrasilAuthenticationService.java
++++ com/mojang/authlib/yggdrasil/YggdrasilAuthenticationService.java
+@@ -16,10 +16,11 @@
+ import com.mojang.authlib.GameProfileRepository;
+ import com.mojang.authlib.HttpAuthenticationService;
+ import com.mojang.authlib.UserAuthentication;
+ import com.mojang.authlib.exceptions.AuthenticationException;
+ import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
++import com.mojang.authlib.exceptions.InsufficientPrivilegesException;
+ import com.mojang.authlib.exceptions.InvalidCredentialsException;
+ import com.mojang.authlib.exceptions.UserMigratedException;
+ import com.mojang.authlib.minecraft.MinecraftSessionService;
+ import com.mojang.authlib.properties.PropertyMap;
+ import com.mojang.authlib.yggdrasil.response.ProfileSearchResultsResponse;
+@@ -28,25 +29,35 @@
+ import java.io.IOException;
+ import java.lang.reflect.Type;
+ import java.net.Proxy;
+ import java.net.URL;
+ import java.util.UUID;
++import javax.annotation.Nullable;
+ import org.apache.commons.lang3.StringUtils;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
+ public class YggdrasilAuthenticationService extends HttpAuthenticationService {
+    private static final Logger LOGGER = LogManager.getLogger();
++   @Nullable
+    private final String clientToken;
+    private final Gson gson;
+    private final Environment environment;
+ 
+-   public YggdrasilAuthenticationService(Proxy var1, String var2) {
++   public YggdrasilAuthenticationService(Proxy var1) {
++      this(var1, determineEnvironment());
++   }
++
++   public YggdrasilAuthenticationService(Proxy var1, Environment var2) {
++      this(var1, (String)null, var2);
++   }
++
++   public YggdrasilAuthenticationService(Proxy var1, @Nullable String var2) {
+       this(var1, var2, determineEnvironment());
+    }
+ 
+-   public YggdrasilAuthenticationService(Proxy var1, String var2, Environment var3) {
++   public YggdrasilAuthenticationService(Proxy var1, @Nullable String var2, Environment var3) {
+       super(var1);
+       this.clientToken = var2;
+       this.environment = var3;
+       GsonBuilder var4 = new GsonBuilder();
+       var4.registerTypeAdapter(GameProfile.class, new YggdrasilAuthenticationService.GameProfileSerializer());
+@@ -60,11 +71,15 @@
+    private static Environment determineEnvironment() {
+       return (Environment)EnvironmentParser.getEnvironmentFromProperties().orElse(YggdrasilEnvironment.PROD);
+    }
+ 
+    public UserAuthentication createUserAuthentication(Agent var1) {
+-      return new YggdrasilUserAuthentication(this, var1, this.environment);
++      if (this.clientToken == null) {
++         throw new IllegalStateException("Missing client token");
++      } else {
++         return new YggdrasilUserAuthentication(this, this.clientToken, var1, this.environment);
++      }
+    }
+ 
+    public MinecraftSessionService createMinecraftSessionService() {
+       return new YggdrasilMinecraftSessionService(this, this.environment);
+    }
+@@ -72,33 +87,39 @@
+    public GameProfileRepository createProfileRepository() {
+       return new YggdrasilGameProfileRepository(this, this.environment);
+    }
+ 
+    protected <T extends Response> T makeRequest(URL var1, Object var2, Class<T> var3) throws AuthenticationException {
++      return this.makeRequest(var1, var2, var3, (String)null);
++   }
++
++   protected <T extends Response> T makeRequest(URL var1, Object var2, Class<T> var3, @Nullable String var4) throws AuthenticationException {
+       try {
+-         String var4 = var2 == null ? this.performGetRequest(var1) : this.performPostRequest(var1, this.gson.toJson(var2), "application/json");
+-         Response var5 = (Response)this.gson.fromJson(var4, var3);
+-         if (var5 == null) {
++         String var5 = var2 == null ? this.performGetRequest(var1, var4) : this.performPostRequest(var1, this.gson.toJson(var2), "application/json");
++         Response var6 = (Response)this.gson.fromJson(var5, var3);
++         if (var6 == null) {
+             return null;
+-         } else if (StringUtils.isNotBlank(var5.getError())) {
+-            if ("UserMigratedException".equals(var5.getCause())) {
+-               throw new UserMigratedException(var5.getErrorMessage());
+-            } else if ("ForbiddenOperationException".equals(var5.getError())) {
+-               throw new InvalidCredentialsException(var5.getErrorMessage());
++         } else if (StringUtils.isNotBlank(var6.getError())) {
++            if ("UserMigratedException".equals(var6.getCause())) {
++               throw new UserMigratedException(var6.getErrorMessage());
++            } else if ("ForbiddenOperationException".equals(var6.getError())) {
++               throw new InvalidCredentialsException(var6.getErrorMessage());
++            } else if ("InsufficientPrivilegesException".equals(var6.getError())) {
++               throw new InsufficientPrivilegesException(var6.getErrorMessage());
+             } else {
+-               throw new AuthenticationException(var5.getErrorMessage());
++               throw new AuthenticationException(var6.getErrorMessage());
+             }
+          } else {
+-            return var5;
++            return var6;
+          }
+-      } catch (IllegalStateException | JsonParseException | IOException var6) {
+-         throw new AuthenticationUnavailableException("Cannot contact authentication server", var6);
++      } catch (IllegalStateException | JsonParseException | IOException var7) {
++         throw new AuthenticationUnavailableException("Cannot contact authentication server", var7);
+       }
+    }
+ 
+-   public String getClientToken() {
+-      return this.clientToken;
++   public YggdrasilSocialInteractionsService createSocialInteractionsService(String var1) throws AuthenticationException {
++      return new YggdrasilSocialInteractionsService(this, var1, this.environment);
+    }
+ 
+    private static class GameProfileSerializer implements JsonSerializer<GameProfile>, JsonDeserializer<GameProfile> {
+       private GameProfileSerializer() {
+       }

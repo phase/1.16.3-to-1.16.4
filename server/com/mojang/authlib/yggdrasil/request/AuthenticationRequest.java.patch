@@ -1,0 +1,25 @@
+--- com/mojang/authlib/yggdrasil/request/AuthenticationRequest.java
++++ com/mojang/authlib/yggdrasil/request/AuthenticationRequest.java
+@@ -1,19 +1,18 @@
+ package com.mojang.authlib.yggdrasil.request;
+ 
+ import com.mojang.authlib.Agent;
+-import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
+ 
+ public class AuthenticationRequest {
+    private Agent agent;
+    private String username;
+    private String password;
+    private String clientToken;
+    private boolean requestUser = true;
+ 
+-   public AuthenticationRequest(YggdrasilUserAuthentication var1, String var2, String var3) {
+-      this.agent = var1.getAgent();
++   public AuthenticationRequest(Agent var1, String var2, String var3, String var4) {
++      this.agent = var1;
+       this.username = var2;
+-      this.clientToken = var1.getAuthenticationService().getClientToken();
+       this.password = var3;
++      this.clientToken = var4;
+    }
+ }

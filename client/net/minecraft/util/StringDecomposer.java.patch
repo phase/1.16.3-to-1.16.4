@@ -1,0 +1,21 @@
+--- net/minecraft/util/StringDecomposer.java
++++ net/minecraft/util/StringDecomposer.java
+@@ -139,9 +139,18 @@
+          return true;
+       });
+       return var1.toString();
+    }
+ 
++   public static String getPlainText(FormattedText var0) {
++      StringBuilder var1 = new StringBuilder();
++      iterateFormatted(var0, Style.EMPTY, (var1x, var2, var3) -> {
++         var1.appendCodePoint(var3);
++         return true;
++      });
++      return var1.toString();
++   }
++
+    static {
+       STOP_ITERATION = Optional.of(Unit.INSTANCE);
+    }
+ }

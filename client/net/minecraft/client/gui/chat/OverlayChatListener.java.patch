@@ -1,0 +1,14 @@
+--- net/minecraft/client/gui/chat/OverlayChatListener.java
++++ net/minecraft/client/gui/chat/OverlayChatListener.java
+@@ -11,10 +11,8 @@
+    public OverlayChatListener(Minecraft var1) {
+       this.minecraft = var1;
+    }
+ 
+    public void handle(ChatType var1, Component var2, UUID var3) {
+-      if (!this.minecraft.isBlocked(var3)) {
+-         this.minecraft.gui.setOverlayMessage(var2, false);
+-      }
++      this.minecraft.gui.setOverlayMessage(var2, false);
+    }
+ }

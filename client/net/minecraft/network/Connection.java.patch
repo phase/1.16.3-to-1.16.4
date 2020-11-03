@@ -1,0 +1,42 @@
+--- net/minecraft/network/Connection.java
++++ net/minecraft/network/Connection.java
+@@ -27,20 +27,19 @@
+ import io.netty.util.concurrent.GenericFutureListener;
+ import java.net.InetAddress;
+ import java.net.SocketAddress;
+ import java.util.Queue;
+ import javax.annotation.Nullable;
+-import javax.crypto.SecretKey;
++import javax.crypto.Cipher;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.network.chat.TranslatableComponent;
+ import net.minecraft.network.protocol.Packet;
+ import net.minecraft.network.protocol.PacketFlow;
+ import net.minecraft.network.protocol.game.ClientboundDisconnectPacket;
+ import net.minecraft.server.RunningOnDifferentThreadException;
+ import net.minecraft.server.network.ServerGamePacketListenerImpl;
+ import net.minecraft.server.network.ServerLoginPacketListenerImpl;
+-import net.minecraft.util.Crypt;
+ import net.minecraft.util.LazyLoadedValue;
+ import net.minecraft.util.Mth;
+ import org.apache.commons.lang3.Validate;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+@@ -285,14 +284,14 @@
+          }
+       })).channel(LocalChannel.class)).connect(var0).syncUninterruptibly();
+       return var1;
+    }
+ 
+-   public void setEncryptionKey(SecretKey var1) {
++   public void setEncryptionKey(Cipher var1, Cipher var2) {
+       this.encrypted = true;
+-      this.channel.pipeline().addBefore("splitter", "decrypt", new CipherDecoder(Crypt.getCipher(2, var1)));
+-      this.channel.pipeline().addBefore("prepender", "encrypt", new CipherEncoder(Crypt.getCipher(1, var1)));
++      this.channel.pipeline().addBefore("splitter", "decrypt", new CipherDecoder(var1));
++      this.channel.pipeline().addBefore("prepender", "encrypt", new CipherEncoder(var2));
+    }
+ 
+    public boolean isEncrypted() {
+       return this.encrypted;
+    }

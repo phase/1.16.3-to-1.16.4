@@ -1,0 +1,40 @@
+--- com/mojang/realmsclient/gui/screens/RealmsTermsScreen.java
++++ com/mojang/realmsclient/gui/screens/RealmsTermsScreen.java
+@@ -26,11 +26,11 @@
+    private static final Component TERMS_LINK_TEXT;
+    private final Screen lastScreen;
+    private final RealmsMainScreen mainScreen;
+    private final RealmsServer realmsServer;
+    private boolean onLink;
+-   private final String realmsToSUrl = "https://minecraft.net/realms/terms";
++   private final String realmsToSUrl = "https://aka.ms/MinecraftRealmsTerms";
+ 
+    public RealmsTermsScreen(Screen var1, RealmsMainScreen var2, RealmsServer var3) {
+       this.lastScreen = var1;
+       this.mainScreen = var2;
+       this.realmsServer = var3;
+@@ -72,18 +72,22 @@
+ 
+    }
+ 
+    public boolean mouseClicked(double var1, double var3, int var5) {
+       if (this.onLink) {
+-         this.minecraft.keyboardHandler.setClipboard("https://minecraft.net/realms/terms");
+-         Util.getPlatform().openUri("https://minecraft.net/realms/terms");
++         this.minecraft.keyboardHandler.setClipboard("https://aka.ms/MinecraftRealmsTerms");
++         Util.getPlatform().openUri("https://aka.ms/MinecraftRealmsTerms");
+          return true;
+       } else {
+          return super.mouseClicked(var1, var3, var5);
+       }
+    }
+ 
++   public String getNarrationMessage() {
++      return super.getNarrationMessage() + ". " + TERMS_STATIC_TEXT.getString() + " " + TERMS_LINK_TEXT.getString();
++   }
++
+    public void render(PoseStack var1, int var2, int var3, float var4) {
+       this.renderBackground(var1);
+       drawCenteredString(var1, this.font, TITLE, this.width / 2, 17, 16777215);
+       this.font.draw(var1, TERMS_STATIC_TEXT, (float)(this.width / 2 - 120), (float)row(5), 16777215);
+       int var5 = this.font.width((FormattedText)TERMS_STATIC_TEXT);
